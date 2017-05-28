@@ -1,0 +1,12 @@
+import cv2
+import numpy as py
+import os.path
+import os
+import argparse 
+parse=argparse.ArgmentParse(description="Detect image features")
+parse.add_argument('dataset',help='add a images folder')
+args=parse.parse_args()
+path = os.path.join(args.dataset,'images')
+for name in os.dirlist(path):
+  image = cv2.imread(name,1)
+  cv2.resize(

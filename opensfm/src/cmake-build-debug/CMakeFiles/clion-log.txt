@@ -1,0 +1,37 @@
+/home/inin/Downloads/clion-2016.3/bin/cmake/bin/cmake -DCMAKE_BUILD_TYPE=Debug -G "CodeBlocks - Unix Makefiles" /home/open/learn/OpenSFM/opensfm/src
+-- A library with BLAS API found.
+-- A library with LAPACK API found.
+-- A library with BLAS API found.
+-- Found AMD library: /usr/lib/x86_64-linux-gnu/libamd.so
+-- Found AMD header in: /usr/include/suitesparse
+-- Found CAMD library: /usr/lib/x86_64-linux-gnu/libcamd.so
+-- Found CAMD header in: /usr/include/suitesparse
+-- Found COLAMD library: /usr/lib/x86_64-linux-gnu/libcolamd.so
+-- Found COLAMD header in: /usr/include/suitesparse
+-- Found CCOLAMD library: /usr/lib/x86_64-linux-gnu/libccolamd.so
+-- Found CCOLAMD header in: /usr/include/suitesparse
+-- Found CHOLMOD library: /usr/lib/x86_64-linux-gnu/libcholmod.so
+-- Found CHOLMOD header in: /usr/include/suitesparse
+-- Found SuiteSparseQR library: /usr/lib/x86_64-linux-gnu/libspqr.so
+-- Found SuiteSparseQR header in: /usr/include/suitesparse
+-- Found Intel Thread Building Blocks (TBB) library: /usr/lib/libtbb.so, assuming SuiteSparseQR was compiled with TBB.
+-- Found Intel Thread Building Blocks (TBB) Malloc library: /usr/lib/libtbbmalloc.so
+-- Found SuiteSparse_config library: /usr/lib/x86_64-linux-gnu/libsuitesparseconfig.a
+-- Found SuiteSparse_config header in: /usr/include/suitesparse
+-- Adding librt: /usr/lib/x86_64-linux-gnu/librt.so to SuiteSparse_config libraries (required on Linux & Unix [not OSX] if SuiteSparse is compiled with timing).
+-- Did not find METIS library (optional SuiteSparse dependency)
+-- Could NOT find ceres (missing:  CERES_LIBRARY CERES_INCLUDE_DIR) 
+-- Boost version: 1.54.0
+-- Found the following Boost libraries:
+--   python
+CMake Error: The following variables are used in this project, but they are set to NOTFOUND.
+Please set them or make sure they are set and tested correctly in the CMake files:
+CERES_INCLUDE_DIR (ADVANCED)
+   used as include directory in directory /home/open/learn/OpenSFM/opensfm/src
+   used as include directory in directory /home/open/learn/OpenSFM/opensfm/src
+   used as include directory in directory /home/open/learn/OpenSFM/opensfm/src
+   used as include directory in directory /home/open/learn/OpenSFM/opensfm/src
+   used as include directory in directory /home/open/learn/OpenSFM/opensfm/src
+
+-- Configuring incomplete, errors occurred!
+See also "/home/open/learn/OpenSFM/opensfm/src/cmake-build-debug/CMakeFiles/CMakeOutput.log".

@@ -1,0 +1,62 @@
+#from opensfm import dataset
+from opensfm import features
+from opensfm import context
+import numpy as np
+import time
+import logging
+import argparse
+import os.path,sys
+import cv2
+import matplotlib.pyplot as plt
+
+def parse_para():
+  
+  path = os.path.join(args.dataset,'images')
+  if os.path.isfile(os.path.join(args.dataset,'imageslist.txt')):
+    os.remove(os.path.join(args.dataset,'imageslist.txt'))
+  for name in os.listdir(path):
+    if is_image_file(name):
+      with open(os.path.join(args.dataset,'imageslist.txt'), 'a') as fout:
+        fout.write(args.dataset + '/images/' + name+'\n')
+
+def read_image_list(L=None):
+  if os.path.isfile(os.path.join(args.dataset,'imageslist.txt')):
+    with open(os.path.join(args.dataset,'imageslist.txt')) as fin:
+      for line in fin:
+        #L.append(line)
+        L.append(line.strip('\n'))
+    return True
+  else:
+    parse_para()
+    return False
+
+def is_image_file(name):
+  return name.split('.')[-1].lower() in {'jpg', 'jpeg', 'png', 'tif'}
+
+def detect_feature(L):
+  print (cv2.__version__)
+  IMREAD_COLOR = cv2.IMREAD_COLOR if context.OPENCV3 else cv2.CV_LOAD_IMAGE_COLOR
+  image = cv2.imread(L[1], IMREAD_COLOR)[:,:,::-1]  # Turn BGR to RGB
+  #image = cv2.imread(L[0],1)[:,:,::-1]
+  #gray = cv2.cvtColor(image,cv2.COLOR_BGR2GRAY)
+  #print image_single
+  plt.imshow(image, cmap='gray')
+  plt.show()
+  detector = cv2.FeatureDetector_create('SIFT')
+  descriptor = cv2.DescriptorExtractor_create('SIFT')
+  #detector.setDouble("contrastThreshold", 0.1)
+  #detector.setDouble('edgeThreshold', 10)
+  points = detector.detect(image)
+
+if __name__ == '__main__':
+  logging.basicConfig(format='%(asctime)s %(message)s', level=logging.INFO)
+  start=time.time()
+  parse=argparse.ArgumentParser(description="Detect image features")
+  parse.add_argument('dataset',help='add a images folder')
+  args=parse.parse_args()  
+  parse_para()
+  L=list()
+  read_image_list(L)
+  print(L)
+  detect_feature(L)
+

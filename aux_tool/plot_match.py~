@@ -1,0 +1,48 @@
+import numpy as np
+import time
+import logging
+import argparse
+import os.path,sys
+import pickle
+import cv2
+
+def plot_matches(matches):
+    #cv2.drawKeypoints()
+    pass
+
+def denormalized_image_coordinates(norm_coords, width, height):
+    size = max(width, height)
+    p = np.empty((len(norm_coords), 2))
+    p[:, 0] = norm_coords[:, 0] * size - 0.5 + width / 2.0
+    p[:, 1] = norm_coords[:, 1] * size - 0.5 + height / 2.0
+    return p
+def read_feature_file(L_name_single):
+  with open(os.path.join(os.path.join(args.dataset,'features'),'{}.features.pkl.gz'.format(L_name_single))) as fout:
+    feature_for_single = pickle.load(fout)
+    return feature_for_single
+
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description='Plot matches between images')
+    parser.add_argument('dataset',
+                        help='path to the dataset to be processed')
+    args = parser.parse_args()
+
+    path = os.path.join(args.dataset,'matches')
+
+    for name in os.listdir(path):
+        #images = cv2.imread(name)
+        print name
+        feature_path1 = os.path.join(os.path.join(args.dataset,'features'),name.split('.')[0] + '.jpg.features.pkl.gz')
+        feature_path2 = os.path.join(os.path.join(args.dataset,'features'),name.split('.')[2] + '.jpg.features.pkl.gz')
+        with open(feature_path1) as fout:
+             points1,features1,color1 = pickle.load(fout)
+
+        with open(feature_path2) as fout:
+             points2,features2,color2 = pickle.load(fout)
+
+        #print feature_path1
+        with open(os.path.join(os.path.join(args.dataset,'matches'),name)) as fout:
+            matches_for_pair = pickle.load(fout)
+
+        plot_matches(matches_for_pair)
