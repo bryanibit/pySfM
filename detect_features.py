@@ -1,5 +1,5 @@
 #from opensfm import dataset
-from opensfm import features
+#from opensfm import features
 from opensfm import context
 import numpy as np
 import time
@@ -69,12 +69,16 @@ def detect_feature(L):
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
     # print image_single
     # image_out=cv2.cvtColor(image,cv2.COLOR_B)
-    detector = cv2.FeatureDetector_create('SIFT')
-    descriptor = cv2.DescriptorExtractor_create('SIFT')
-    detector.setDouble("contrastThreshold", 0.1)
-    detector.setDouble('edgeThreshold', 10)
-    points = detector.detect(gray)
-    points, desc = descriptor.compute(gray, points)
+    if cv2.__version__.split('.')[0]==2:
+      detector = cv2.FeatureDetector_create('SIFT')
+      descriptor = cv2.DescriptorExtractor_create('SIFT')
+      detector.setDouble("contrastThreshold", 0.1)
+      detector.setDouble('edgeThreshold', 10)
+      points = detector.detect(gray)
+      points, desc = descriptor.compute(gray, points)
+    else:
+      sift = cv2.xfeatures2d.SIFT_create()
+      points, desc = sift.detectAndCompute(gray, None)
     #show detect feature in non-normalized coordinate
     cv2.drawKeypoints(gray, points, gray, color=255, flags=1)
     cv2.imshow('gray', gray)
@@ -96,8 +100,8 @@ def detect_feature(L):
     # if L_child.split('/')[-1]=='02.jpg':
     #     with open('before.txt', 'w') as fout:
     #         json.dump(keypoints[0:PrimaryNum, :].tolist(), fout)
-    # save_feature(L_child.split('/')[-1],keypoints[0:PrimaryNum,:],descriptors[0:PrimaryNum,:],colors[0:PrimaryNum,:])
-    save_feature(L_child.split('/')[-1],keypoints,descriptors,colors)
+    save_feature(L_child.split('/')[-1],keypoints[0:PrimaryNum,:],descriptors[0:PrimaryNum,:],colors[0:PrimaryNum,:])
+    # save_feature(L_child.split('/')[-1],keypoints,descriptors,colors)
 
 def read_feature_file(L_name_single):
   with open(os.path.join(os.path.join(args.dataset,'features'),'{}.features.pkl.gz'.format(L_name_single))) as fout:
@@ -133,6 +137,25 @@ def match_lowe(feature1,feature2):
   matches = set(matches1).intersection(matches2)
   return np.array(list(matches),dtype=int)
 
+def match_lowe_new(feature1,feature2):
+  FLANN_INDEX_KDTREE = 0
+  index_params = dict(algorithm=FLANN_INDEX_KDTREE, trees=5)
+  search_params = dict(checks=50)
+  flann = cv2.FlannBasedMatcher(index_params, search_params)
+
+  matches1 = flann.knnMatch(feature1, feature2, k=2)
+  good1=np.array([m.distance < 0.8*n.distance for m,n in matches1])
+  matches_good1 = zip(matches1[good1,0],good1.nonzero()[0])
+  # another one
+  matches2 = flann.knnMatch(feature2, feature1, k=2)
+  good2 = np.array([m.distance < 0.8 * n.distance for m, n in matches2])
+  matches_good2 = zip(matches2[good2, 0], good2.nonzero()[0])
+
+  matches_12 = [(a, b) for a, b in np.array(matches_good1, dtype=int)]
+  matches_21 = [(b, a) for a, b in np.array(matches_good2, dtype=int)]
+  matches = set(matches_12).intersection(matches_21)
+  return np.array(list(matches), dtype=int)
+
 def match_features_2D(L_name):
   #first read pickle file, then get descriptor and points and color then match
   pairs=set()
@@ -152,7 +175,10 @@ def match_features_2D(L_name):
   # print type(point02.tolist())
   # with open('after.txt','w') as fout:
   #     json.dump(point02.tolist(),fout)
-      matches_good = match_lowe(feature_pair0,feature_pair1)
+      if cv2.__version__.split('.')[0]==2:
+        matches_good = match_lowe(feature_pair0, feature_pair1)
+      else:
+        matches_good = match_lowe_new(feature_pair0, feature_pair1)
 
 
       good_matches_store(pairs_two, matches_good)
