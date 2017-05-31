@@ -1,0 +1,20 @@
+import cv2
+import numpy as np
+import os,os.path
+import argparse
+
+def read_image(path):
+    return cv2.imread(path,1)
+def extract_color(image):
+    r,g,b = image[0,0]
+    return r,g,b
+
+if __name__=='__main__':
+    parse=argparse.ArgumentParser(description="Detect image features")
+    parse.add_argument('dataset',help='add a images folder')
+    args=parse.parse_args()  
+    image = read_image(os.path.join(args.dataset,'01.png'))
+    cv2.imshow('image',image)
+    cv2.waitKey(0)
+    r,g,b=extract_color(image)
+    print ('The color is r,g,b respectively: {},{},{}'.format(r,g,b))

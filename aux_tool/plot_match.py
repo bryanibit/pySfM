@@ -73,4 +73,4 @@ if __name__ == "__main__":
         a,b,c = image1.shape
 
         plot_matches(image1,image2,matches_for_pair,points1,points2,features1,features2,name.split('.')[0])
-        print ('THere are {} matches in images named {} and {}'.format(len(matches_for_pair),name.split('.')[0],name.split('.')[2]))
+        print ('There are {} matches in images named {} and {}'.format(len(matches_for_pair),name.split('.')[0],name.split('.')[2]))
