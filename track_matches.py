@@ -7,6 +7,14 @@ import time
 import argparse
 import os,os.path
 from opensfm import unionfind
+def good_track(t, min_track_number):
+    if len(t) < min_track_number:
+        return False
+    track_for_image=[f[0] for f in t]
+    if len(set(track_for_image)) != len(track_for_image):
+        return False
+    return True
+
 def track_from_matches(path):
     uf = unionfind.UnionFind()
     sets = {}
@@ -40,29 +48,46 @@ def track_from_matches(path):
             sets[uf[i]] = [i]
         else:
             sets[uf[i]].append(i)
-    tracks = [t for t in sets.values() if len(t) >= 2]
+    # calculate the number of sets
+    # count=0
+    # for sets_single in sets.values():
+    #     count=count+len(sets_single)
+    # print ('There are {} node without repeating'.format(count))
+    tracks = [t for t in sets.values() if good_track(t, min_track_number=2)]
+    print ('Good track has {}'.format(len(tracks)))
     track_graph = networkx.Graph()
     for track_id, track in enumerate(tracks):
         for track_img_feaID in track:
             '''track_img_feaID[0] means image name, for example 01.jpg. And track_img_feaID[1] means feature ID'''
-            track_graph.add_node(str(list(track_img_feaID)[0]), dipict=0)
-            track_graph.add_node(track_id, dipict=1)# for another same thing, it will not add to the graph
+            track_graph.add_node(str(list(track_img_feaID)[0]), bipartite=0)
+            track_graph.add_node(track_id, bipartite=1)# for another same thing, it will not add to the graph
             featureAll = feature_from_file[str(list(track_img_feaID)[0])]
             colorAll = featureAll[2]
             b, g, r = colorAll[track_img_feaID[1]]
-            track_graph.add_edge(str(list(track_img_feaID)[0]), track_id, featureID=list(track_img_feaID)[1],
+            track_graph.add_edge(str(list(track_img_feaID)[0]), track_id, feature= feature_from_file[track_img_feaID[0]][0][track_img_feaID[1]], feature_id=list(track_img_feaID)[1],
                                  feature_color=(r, g, b))
     return track_graph
+# def save_track(track_graph):
+#     try:
+#         if not os.path.isdir(os.path.join(args.dataset, 'tracks')):
+#             os.mkdir(os.path.join(args.dataset, 'tracks'))
+#         path = os.path.join(os.path.join(args.dataset, 'tracks'), 'track_graph.pkl.gz')
+#         with open(path, 'w') as fin:
+#             pickle.dump(track_graph, fin)
+#         return True
+#     except OSError:
+#         return False
 def save_track(track_graph):
-    try:
-        if not os.path.isdir(os.path.join(args.dataset, 'tracks')):
-            os.mkdir(os.path.join(args.dataset, 'tracks'))
-        path = os.path.join(os.path.join(args.dataset, 'tracks'), 'track_graph.pkl.gz')
-        with open(path, 'w') as fin:
-            pickle.dump(track_graph, fin)
-        return True
-    except OSError:
-        return False
+    with open(os.path.join(args.dataset, 'tracks.csv'), 'w') as fout:
+        for node, data in track_graph.nodes(data=True):
+            if data['bipartite']==0:
+                image = node
+                for track, data in track_graph[image].items():
+                    x, y = data['feature']
+                    fid = data['feature_id']
+                    r, g, b = data['feature_color']
+                    fout.write('%s\t%s\t%d\t%g\t%g\t%g\t%g\t%g\n' % (str(image), str(track), fid, x, y, r, g, b))
+    return True
 
 def show_graph(track_graph):
     import matplotlib.pyplot as plt

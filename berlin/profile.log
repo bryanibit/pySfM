@@ -32,4 +32,4 @@ focal_from_exif: 0.196882963181
 match_features: 34.4967811108
 match_features: 116.08136797
 reconstruct: 36730.9581101
-focal_from_exif:0.0198421478271focal_from_exif:0.0214760303497
+focal_from_exif:0.0198421478271focal_from_exif:0.0214760303497reconstruct: 0.827031135559
