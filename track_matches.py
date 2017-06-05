@@ -58,7 +58,7 @@ def track_from_matches(path):
     track_graph = networkx.Graph()
     for track_id, track in enumerate(tracks):
         for track_img_feaID in track:
-            '''track_img_feaID[0] means image name, for example 01.jpg. And track_img_feaID[1] means feature ID'''
+            '''Note: track_img_feaID[0] means image name, for example 01.jpg. And track_img_feaID[1] means feature ID'''
             track_graph.add_node(str(list(track_img_feaID)[0]), bipartite=0)
             track_graph.add_node(track_id, bipartite=1)# for another same thing, it will not add to the graph
             featureAll = feature_from_file[str(list(track_img_feaID)[0])]
